@@ -151,7 +151,9 @@ ENSEMBLE_FLOORS = [Floor(0.7), Floor(0.7), Floor(1.0), Floor(1.0), Floor(1.0), F
 
 @dataclass
 class Robot:
-    """One MuJoCo model + data, re-tuned in place for a ServoModel and a Floor."""
+    """One MuJoCo model + data, re-tuned in place for a ServoModel and a Floor.
+    display=False: the robot without its 10 g display (screen) at the front."""
+    display: bool = True
     m: mujoco.MjModel = field(init=False)
     d: mujoco.MjData = field(init=False)
 
@@ -170,6 +172,13 @@ class Robot:
                          frc=m.actuator_forcerange.copy(), fric=m.geom_friction.copy(), mass=m.body_mass.copy(),
                          inertia=m.body_inertia.copy(), dof_damp=m.dof_damping.copy(),
                          ten_damp=m.tendon_damping.copy())
+        if not self.display:
+            self._nom["mass"][m.body("display_mass").id] = 0.0
+            self._nom["inertia"][m.body("display_mass").id] = 1e-12
+            for g in range(m.ngeom):                                   # and hide the screen in renders
+                if m.body(int(m.geom_bodyid[g])).name == "base" and int(m.geom_matid[g]) >= 0 and \
+                        m.material(int(m.geom_matid[g])).name in ("display_frame", "screen", "face"):
+                    m.geom_rgba[g, 3] = 0.0
         self._key = m.key("stand").id
         # servo angle (deg) -> actuator length is affine; measure it once to read the servo positions back
         c0 = self._ctrl_for(np.zeros(12))

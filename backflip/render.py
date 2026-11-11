@@ -198,3 +198,33 @@ def sim_vs_real_video(real_mp4, offset_s: float, results: List[FlipResult], labe
         p.stdin.close()
         p.wait()
     return path
+
+
+def sim2real_grid(rows, path, t0: float = 2.40, t1: float = 3.45, slow: float = 3.0, width=384, height=216,
+                  fps_in=60, step: int = 2, colors: int = 128, **cam):
+    """several real videos, each next to its simulation, one row each (the README's headline animation).
+    rows: [(real_mp4, offset_s, FlipResult, real_label, sim_label, Robot or None)] - video time = flip time + offset_s"""
+    n = int(round((t1 - t0) * fps_in))
+    cam = dict(dict(azimuth=90.0, elevation=-5.0, distance=0.55, shadows=False), **cam)
+    reals, cams = [], []
+    for mp4, off, res, _, _, rb in rows:
+        proc = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t0 + off:.3f}", "-i", str(mp4), "-frames:v", str(n),
+                               "-vf", f"fps={fps_in},scale={width}:{height}", "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                              capture_output=True, check=True)
+        reals.append(np.frombuffer(proc.stdout, np.uint8).reshape(-1, height, width, 3))
+        cams.append(Camera(rb or Robot(), width, height, **cam))
+    frames = []
+    for j in range(0, min(len(r) for r in reals), step):
+        t = t0 + j / fps_in
+        grid = []
+        for (mp4, off, res, rl, sl, _), real, c in zip(rows, reals, cams):
+            k = int(np.argmin(np.abs(res.t - t)))
+            grid.append(np.concatenate([_label(real[j].copy(), [rl], 15),
+                                        _label(c.shot(res.qpos[k]), [sl, f"turned {res.pitch[k]:4.0f} deg"], 15)], 1))
+        frames.append(np.concatenate(grid, 0))
+    for c in cams:
+        c.close()
+    ims = [Image.fromarray(f).convert("P", palette=Image.ADAPTIVE, colors=colors) for f in frames]
+    ims[0].save(path, save_all=True, append_images=ims[1:], duration=int(1000 * step * slow / fps_in), loop=0,
+                optimize=True)
+    return path

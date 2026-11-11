@@ -40,6 +40,7 @@ python scripts/analyze_recording.py my_flip.csv --sim k7_405 --plot check.png
 | S3 | 6 | 237° (233-242) | 6 / 6 | rubber shoes, carpet |
 | S3 on grass | 3 | 235° (233-237) | **0 / 3** | soft floor |
 | K7 405 g on a thin grass mat | 2 | 286° (280-292) | 2 / 2 | strong flips: sat back 40-47° after landing ([docs/07](07-sim-to-real-landing.md)) |
+| **K7 405 L2** on the grass mat | 2 (video only) | - | 2 / 2 | landed level, with and without the display ([docs/07](07-sim-to-real-landing.md#on-the-robot)) |
 
 ## What we learned
 

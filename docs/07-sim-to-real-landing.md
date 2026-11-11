@@ -75,15 +75,19 @@ What changed, in degrees from the stand (right legs; the left mirror them):
 
 The front legs reach further, and both pairs of legs **land bent and keep folding**: the rear knees by about 30°. The leftover spin goes into bending the legs instead of throwing the rear down and sitting the robot back.
 
-## Status and how to try it
+## On the robot
 
-**L2 has not been tried on the robot yet.** In the firmware it is the one-button flip **"Backflip K7 405 L2 (softer landing)"**. Try it on a fresh or fully charged battery, which is the case it was made for. On a tired battery (under ~11.5 V) K7 405 g is the safer choice. Record the flips and compare:
+![K7 405 L2, real vs sim](figures/hero_l2.gif)
+
+L2 was filmed on the same grass mat on 2026-11-11, once without the display and once with it (`media/flip_l2_no_screen.mp4`, `media/flip_l2_with_screen.mp4`). Both flips landed front paws first and settled level in a crouch. Neither showed the 40-47° sit-back that K7 405 g had. The simulator, synced at the touchdown, follows both flips through the push, the flight and the landing. In the sim the display changes the landing by only 8° at touchdown (270° without, 278° with), and both versions settle level.
+
+These two flips were filmed without telemetry, so the rock-back was judged from the video rather than measured with the IMU. Record the next ones to put numbers on it:
 
 ```
 python scripts/analyze_recording.py my_l2_flip.csv --sim k7_405_l2 --plot l2_check.png
 ```
 
-The numbers to watch are *rocks back* (K7 405 g today: 40-47°) and whether the front paws touch first.
+The numbers to watch are *rocks back* (K7 405 g: 40-47°) and whether the front paws touch first. In the firmware L2 is the one-button flip **"Backflip K7 405 L2 (softer landing)"**. On a tired battery (under ~11.5 V) K7 405 g is the safer choice in the sim.
 
 ## Make the same comparison for your own video
 

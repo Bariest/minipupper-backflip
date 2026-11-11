@@ -3,7 +3,7 @@ box this script uses EGL).
 
     python scripts/make_figures.py            # all
     python scripts/make_figures.py voltage    # some: keyframes anatomy sim_vs_real servo voltage optimizer
-                                              #       real floors sysid render landing sim2real
+                                              #       real floors sysid render landing sim2real hero
 """
 import json
 import os
@@ -138,9 +138,24 @@ def fig_sim2real():
                              step=2, colors=128)
 
 
+def fig_hero():
+    """the README's headline: K7 405 L2 on the real robot, without and with the display, next to the sim"""
+    from backflip import Robot, render
+    like = (ENSEMBLE[2].at(12.5), ENSEMBLE_FLOORS[2])
+    L2 = Preset.load("k7_405_l2")
+    rows = []
+    for disp, mp4, td_video, rl in ((False, "flip_l2_no_screen.mp4", 6.45, "real: K7 405 L2, no display"),
+                                    (True, "flip_l2_with_screen.mp4", 4.55, "real: K7 405 L2, with display")):
+        rb = Robot(display=disp)
+        res = simulate(L2, *like, rb)
+        off = td_video - res.metrics["t_td"]                 # sync the two at the touchdown (front paws)
+        rows.append((ROOT / "media" / mp4, off, res, rl, "sim: K7 405 L2, " + ("with display" if disp else "no display"), rb))
+    render.sim2real_grid(rows, FIG / "hero_l2.gif", t0=2.42, t1=3.42, distance=0.45, colors=112)
+
+
 ALL = dict(keyframes=fig_keyframes, anatomy=fig_anatomy, sim_vs_real=fig_sim_vs_real, servo=fig_servo,
            voltage=fig_voltage, optimizer=fig_optimizer, real=fig_real, floors=fig_floors, sysid=fig_sysid,
-           render=fig_render, landing=fig_landing, sim2real=fig_sim2real)
+           render=fig_render, landing=fig_landing, sim2real=fig_sim2real, hero=fig_hero)
 
 
 def main():
