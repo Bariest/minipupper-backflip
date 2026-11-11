@@ -48,6 +48,10 @@ The optimizer didn't buy more rotation. At 12 V the push is speed-limited ([sect
 
 > **Status: not yet tried on the real robot.** The sim ranks tables well but puts the landing ±20° off ([section 3](03-simulation.md#how-far-to-trust-it)). Try it over a soft mat first, record it, and compare.
 
+## A second objective: the landing
+
+`--objective landing` scores only what happens after the front paws touch: how far it rocks back, how hard the rear legs come down, paws first, and ending upright. Combined with `--frames 5 6 7` it re-tunes the landing and leaves the push alone. [Section 7](07-sim-to-real-landing.md) uses it to fix a landing seen on the real robot.
+
 ## Useful variations
 
 ```

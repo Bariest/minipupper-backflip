@@ -53,9 +53,13 @@ class Camera:
 
 
 def _label(img: np.ndarray, lines: Sequence[str], size=18) -> np.ndarray:
-    im = Image.fromarray(img)
-    dr = ImageDraw.Draw(im)
+    im = Image.fromarray(img).convert("RGBA")
     f = _font(size)
+    w = max(int(f.getlength(ln)) for ln in lines) + 14
+    box = Image.new("RGBA", im.size, (0, 0, 0, 0))
+    ImageDraw.Draw(box).rectangle([4, 4, 4 + w, 8 + len(lines) * (size + 4)], fill=(255, 255, 255, 190))
+    im = Image.alpha_composite(im, box).convert("RGB")
+    dr = ImageDraw.Draw(im)
     y = 8
     for ln in lines:
         dr.text((10, y), ln, fill=(25, 25, 30), font=f)
@@ -153,4 +157,44 @@ def chronophoto(result: FlipResult, times_s: Sequence[float], path, width=1400, 
     if title:
         ImageDraw.Draw(im).text((16, 12), title, fill=(25, 25, 30), font=_font(26))
     im.save(path)
+    return path
+
+
+def sim_vs_real_video(real_mp4, offset_s: float, results: List[FlipResult], labels: List[str], path,
+                      real_label: str = "real robot", t0: float = 2.30, t1: float = 3.40, slow: float = 3.0,
+                      width=400, height=225, fps_in=60, step: int = 1, colors: int = 160, **cam):
+    """the real video next to simulated flips, in step: video time = flip time + offset_s (the flip's t = 0 is when
+    frame 0 was armed; find the offset from one clear moment, e.g. the touchdown). Writes a GIF or an mp4."""
+    n = int(round((t1 - t0) * fps_in))
+    proc = subprocess.run(["ffmpeg", "-v", "error", "-ss", f"{t0 + offset_s:.3f}", "-i", str(real_mp4), "-frames:v",
+                           str(n), "-vf", f"fps={fps_in},scale={width}:{height}", "-f", "rawvideo", "-pix_fmt",
+                           "rgb24", "-"], capture_output=True, check=True)
+    real = np.frombuffer(proc.stdout, np.uint8).reshape(-1, height, width, 3)
+    rb = Robot()
+    cam = dict(dict(azimuth=90.0, elevation=-5.0, distance=0.55, shadows=False), **cam)
+    cams = [Camera(rb, width, height, **cam) for _ in results]
+    frames = []
+    for j in range(0, len(real), step):
+        t = t0 + j / fps_in
+        row = [_label(real[j].copy(), [real_label, f"t = {1000 * t:4.0f} ms"], 15)]
+        for r, c, lb in zip(results, cams, labels):
+            k = int(np.argmin(np.abs(r.t - t)))
+            row.append(_label(c.shot(r.qpos[k]), [lb, f"turned {r.pitch[k]:4.0f} deg"], 15))
+        frames.append(np.concatenate(row, axis=1))
+    for c in cams:
+        c.close()
+    fps_out = fps_in / step / slow
+    path = Path(path)
+    if path.suffix == ".gif":
+        ims = [Image.fromarray(f).convert("P", palette=Image.ADAPTIVE, colors=colors) for f in frames]
+        ims[0].save(path, save_all=True, append_images=ims[1:], duration=int(1000 / fps_out), loop=0, optimize=True)
+    else:
+        h, w = frames[0].shape[:2]
+        p = subprocess.Popen(["ffmpeg", "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s",
+                              f"{w}x{h}", "-r", f"{fps_out:g}", "-i", "-", "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                              "-crf", "24", str(path)], stdin=subprocess.PIPE)
+        for f in frames:
+            p.stdin.write(f.tobytes())
+        p.stdin.close()
+        p.wait()
     return path

@@ -1,0 +1,20 @@
+{
+ "name": "Backflip K7 405 L2",
+ "description": "K7 405 g with a re-tuned LANDING for strong flips (fresh battery / power supply). Frames 0-3 (the push) are K7 405 g's; frames 5-7 and the timing of 4-7 were optimized with CMA-ES (objective 'landing', 40 + 16 generations) on the 6 fitted models at 11.5-13.5 V. Sim, 30 runs: upright 30/30 (K7 405 g: 22/30), front paws first 28/30 (9/30), rocks back 3 deg on average after the touchdown (K7 405 g at 12.5 V: 31 deg). Not yet tried on the real robot.",
+ "units": "frames: ticks relative to the stand, servos 1..12 (FR hip/thigh/knee, FL, RR, RL); 1 tick = 0.3027 deg; times in ms",
+ "stand_ticks": [425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603],
+ "frames": [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, -101, -244, 0, 101, 244, 0, -152, -38, 0, 152, 38],
+    [0, -163, 85, 0, 163, -85, 0, -144, -38, 0, 144, 38],
+    [0, -192, 13, 0, 192, -13, 0, -281, 45, 0, 281, -45],
+    [0, -395, -452, 0, 395, 452, 0, 169, 412, 0, -169, -412],
+    [0, -311, -446, 0, 311, 446, 0, -25, -181, 0, 25, 181],
+    [0, 51, -38, 0, -51, 38, 0, 52, 64, 0, -52, -64],
+    [0, 72, -63, 0, -72, 63, 0, 92, 97, 0, -92, -97],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ ],
+ "move_ms": [1000, 600, 16, 27, 74, 36, 27, 93, 600],
+ "hold_ms": [500, 300, 20, 42, 37, 43, 27, 158, 300],
+ "blend_pct": [100, 100, 100, 100, 100, 100, 100, 100, 100]
+}

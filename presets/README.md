@@ -6,6 +6,7 @@ Keyframe tables (`*.json`, loaded by `backflip.Preset.load`). Frames are servo t
 |---|---|---|
 | `k7_405.json` | **Backflip K7 405 g** | **recommended**: 405 g robot, stock servos, 12 V, bare paws. Turned 272° at touchdown, 3 / 3 upright |
 | `k7_405_opt.json` | K7 405 g after CMA-ES | sim: paws first on 10 / 10 robot models (K7 405 g: 2 / 10). **Not yet tried on the robot** |
+| `k7_405_l2.json` | **K7 405 L2** | K7 405 g's push with a re-tuned landing for strong flips (fresh battery). Sim at 12.5 V: rocks back 0° instead of 31°; upright 30 / 30 over 11.5-13.5 V (K7 405 g: 22 / 30). **Not yet tried on the robot** ([docs/07](../docs/07-sim-to-real-landing.md)) |
 | `o1.json` | O1 | 253°, 10 / 11 upright: paws first more often, vaults more |
 | `s3.json` | S3 | for rubber shoes on carpet: 237°, 6 / 6 upright. Weaker without shoes |
 | `g1.json` | G1 | re-timed for artificial grass in the sim. Not tried on the robot |

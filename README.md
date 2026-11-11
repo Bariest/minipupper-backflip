@@ -1,9 +1,10 @@
-# Mini Pupper 2 backflip
+# Mini Pupper 2 backflip: sim to real
 
-**A backflip for a 405 g quadruped with stock hobby servos.** This repo covers the physics, a MuJoCo simulator fitted to real flips, a CMA-ES trajectory optimizer, analysis tools for the robot's telemetry, and a 75-line firmware player. It also contains everything learned from 34 recorded flips.
+**A backflip for a 405 g quadruped with stock hobby servos.** This repo covers the physics, a MuJoCo simulator fitted to real flips, a CMA-ES trajectory optimizer, analysis tools for the robot's telemetry, and a 75-line firmware player. It also contains everything learned from 36 recorded flips, with videos.
 
 <p align="center">
-  <img src="docs/figures/flip.gif" width="420" alt="simulated K7 405 g backflip, slow motion"><br>
+  <img src="docs/figures/sim2real.gif" width="900" alt="real flip next to the simulation, 3x slower"><br>
+  <sub>The real robot (left, 3× slower) next to the fitted simulator playing the same table (middle), and the simulator with the re-tuned landing (right). → <a href="docs/07-sim-to-real-landing.md">docs/07</a></sub><br><br>
   <img src="docs/figures/sequence.png" width="900" alt="the flip, one pose every ~80 ms">
 </p>
 
@@ -11,9 +12,10 @@
 |---|---|
 | robot | Mini Pupper 2, 405 g with battery, 12 stock servos, 3S pack (~12 V) |
 | controller | open-loop keyframes: 9 poses, 650 ms from the first push to the end of the landing |
-| real result | **K7 405 g: 272° turned at touchdown (262-280°), 3 / 3 landed upright** |
+| real result | **K7 405 g: 262-292° turned at touchdown, 5 / 5 landed upright** (flips 81-83, 115-116) |
 | sim accuracy | servo tracks within 6° RMS, body rotation within 9° RMS of the real flips |
 | optimizer | CMA-ES on 10 robot models: paws-first landings 2 / 10 → 10 / 10 in the sim |
+| landing | K7 405 L2: rocks back 31° → 0° at 12.5 V, upright 22 / 30 → 30 / 30 over 11.5-13.5 V (sim) |
 
 ## Quick start
 
@@ -24,7 +26,7 @@ pip install -r requirements.txt
 python examples/quickstart.py                       # simulate K7 405 g, compare with a real flip
 python scripts/simulate.py k7_405 --robust          # on all 10 robot models
 python scripts/simulate.py k7_405 --video k7.mp4    # slow-motion video (needs ffmpeg)
-python scripts/analyze_recording.py --all           # measure the 34 real flips
+python scripts/analyze_recording.py --all           # measure the 36 real flips
 python scripts/optimize.py k7_405                   # CMA-ES, ~10 min on 2 cores
 python scripts/export_c.py                          # tables -> firmware/presets/*.h
 python -m pytest                                    # tests, including C player == Python player
@@ -50,11 +52,15 @@ Rendering needs an OpenGL context. On a headless Linux machine, set `MUJOCO_GL=e
 
 ![optimizer](docs/figures/optimizer.png)
 
-**5. The real robot.** 34 recorded flips (K7 405 g, O1, S1-S7, with and without rubber shoes, on carpet and on artificial grass) and what they taught us about shoes, floors, twist, calibration and voltage. → [docs/05](docs/05-real-robot.md)
+**5. The real robot.** 36 recorded flips (K7 405 g, O1, S1-S7, with and without rubber shoes, on carpet and on artificial grass) and what they taught us about shoes, floors, twist, calibration and voltage. → [docs/05](docs/05-real-robot.md)
 
 ![real flips](docs/figures/real_flips.png)
 
 **6. Your robot.** The same method, step by step, for another quadruped. → [docs/06](docs/06-port-to-your-robot.md)
+
+**7. Sim to real: the landing.** Two filmed flips that spun harder than before land, then sit back 40-47° nose-up. The fitted sim does the same thing without any change to the model. A landing-only CMA-ES objective over 30 robot models (6 fits × 11.5-13.5 V) gives **K7 405 L2**: the same push, and in the sim at 12.5 V it rocks back 0° instead of 31°. → [docs/07](docs/07-sim-to-real-landing.md)
+
+![landing](docs/figures/landing.png)
 
 ## Repository
 
@@ -72,7 +78,8 @@ scripts/             command-line tools (simulate, optimize, fit, analyze, expor
 presets/             keyframe tables (JSON)            -> presets/README.md
 firmware/            C player + generated preset headers + a host build for testing
 model/               MuJoCo model (MJCF + meshes)
-data/recordings/     34 real flips, 200 Hz telemetry   -> data/recordings/README.md
+data/recordings/     36 real flips, 200 Hz telemetry   -> data/recordings/README.md
+media/               videos of real flips + sim-vs-real video  -> media/README.md
 docs/                the guide, with figures
 tests/               pytest: C/Python player equality, sim and fit sanity
 examples/            quickstart.py

@@ -1,6 +1,6 @@
 # Recordings
 
-34 real backflips of one Mini Pupper 2: 405 g, stock servos, 3S at about 12 V, Strong gains, 1500 mA limit. `index.csv` says which table each one played, on which floor, and with or without shoes.
+36 real backflips of one Mini Pupper 2: 405 g, stock servos, 3S at about 12 V, Strong gains, 1500 mA limit. `index.csv` says which table each one played, on which floor, and with or without shoes.
 
 ## Format
 

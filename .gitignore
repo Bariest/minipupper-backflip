@@ -5,4 +5,4 @@ venv/
 *.egg-info/
 firmware/host/play_table
 firmware/host/play_table.exe
-*.mp4
+/*.mp4

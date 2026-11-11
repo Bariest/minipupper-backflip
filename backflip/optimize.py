@@ -24,7 +24,7 @@ import numpy as np
 
 from .keyframes import Preset
 from .robot import ENSEMBLE, ENSEMBLE_FLOORS, FITTED, Floor, Robot, ServoModel
-from .sim import score, simulate
+from .sim import landing_score, score, simulate
 
 PAIRS = {"front_thigh": (1, 4), "front_knee": (2, 5), "rear_thigh": (7, 10), "rear_knee": (8, 11)}
 
@@ -39,6 +39,15 @@ def robust_set(base: ServoModel = FITTED, volts: float = 12.0) -> List[Tuple[Ser
     return out
 
 
+def landing_set(volts=(12.0, 12.6, 13.2)) -> List[Tuple[ServoModel, Floor]]:
+    """the robots a LANDING must work on: the 6 fitted models at several battery voltages. The higher ones are the
+    strong flips (fresh battery / power supply) that turn ~290 deg before the paws touch and then rock back hard."""
+    return [(sm.at(v), fl) for v in volts for sm, fl in zip(ENSEMBLE, ENSEMBLE_FLOORS)]
+
+
+OBJECTIVES = {"flip": score, "landing": landing_score}
+
+
 @dataclass
 class Space:
     base: Preset
@@ -47,13 +56,16 @@ class Space:
     joints: Sequence[str] = tuple(PAIRS)
     timing: bool = True
     frames: Optional[Sequence[int]] = None
+    timing_frames: Optional[Sequence[int]] = None   # frames whose move/hold may change (default: = frames)
 
     def __post_init__(self):
         n = self.base.n
         self.opt_frames = [f for f in range(1, n - 1) if self.frames is None or f in self.frames]
+        tf = self.frames if self.timing_frames is None else self.timing_frames
+        self.time_frames = [f for f in range(1, n - 1) if self.timing and (tf is None or f in tf)]
         names, lo, hi, x0 = [], [], [], []
-        for f in self.opt_frames:
-            for k in self.joints:
+        for f in sorted(set(self.opt_frames) | set(self.time_frames)):
+            for k in (self.joints if f in self.opt_frames else ()):
                 r = PAIRS[k][0]
                 v = self.base.frames[f][r]
                 rng = self.rear_range if k.startswith("rear") else self.pose_range
@@ -61,7 +73,7 @@ class Space:
                 x0.append(v)
                 lo.append(v - rng)
                 hi.append(v + rng)
-            if self.timing:
+            if f in self.time_frames:
                 for what, arr in (("move", self.base.move_ms), ("hold", self.base.hold_ms)):
                     v = arr[f]
                     names.append(f"f{f}.{what}")
@@ -89,7 +101,8 @@ class Space:
                 r, l = PAIRS[k]
                 d = int(round(v[f"f{f}.{k}"]))
                 p.frames[f][r], p.frames[f][l] = d, -d
-            if self.timing:
+        for f in self.time_frames:
+            if True:
                 p.move_ms[f] = int(round(v[f"f{f}.move"]))
                 p.hold_ms[f] = int(round(v[f"f{f}.hold"]))
         return p.cap_front_knees()
@@ -106,20 +119,23 @@ def rail_penalty(p: Preset, margin: int = 6) -> float:
 
 
 class Objective:
-    def __init__(self, robots: Optional[List[Tuple[ServoModel, Floor]]] = None):
+    def __init__(self, robots: Optional[List[Tuple[ServoModel, Floor]]] = None, kind: str = "flip"):
         self.robots = robots or robust_set()
         self.robot = Robot()
+        self.score = OBJECTIVES[kind]
 
     def evaluate(self, p: Preset, detail: bool = False):
         outs = [simulate(p, sm, fl, self.robot).metrics for sm, fl in self.robots]
-        sc = [score(o) for o in outs]
+        sc = [self.score(o) for o in outs]
         J = 0.6 * float(np.mean(sc)) + 0.4 * float(min(sc)) - rail_penalty(p)
         return (J, outs) if detail else J
 
 
 def describe(outs: List[Dict]) -> str:
     r = [o["rot_td"] for o in outs]
+    ov = [o["overshoot"] for o in outs]
     return (f"turned {np.mean(r):.0f} deg at touchdown ({min(r):.0f}-{max(r):.0f}), "
+            f"rocks back {np.mean(ov):.0f} deg (max {max(ov):.0f}), "
             f"paws first {sum(o['first_touch'] == 'paws' for o in outs)}/{len(outs)}, "
             f"upright {sum(o['upright'] for o in outs)}/{len(outs)}")
 
@@ -127,8 +143,8 @@ def describe(outs: List[Dict]) -> str:
 _W: Dict[str, object] = {}
 
 
-def _winit(space: Space, robots):
-    _W["space"], _W["obj"] = space, Objective(robots)
+def _winit(space: Space, robots, kind="flip"):
+    _W["space"], _W["obj"] = space, Objective(robots, kind)
 
 
 def _weval(u):
@@ -137,11 +153,11 @@ def _weval(u):
 
 
 def run_cmaes(space: Space, robots=None, gens: int = 30, pop: int = 16, sigma: float = 0.15, seed: int = 0,
-              jobs: int = 1, log: Callable[[str], None] = print):
+              jobs: int = 1, log: Callable[[str], None] = print, kind: str = "flip"):
     """-> (best Preset, best J, history [(gen, evals, best J so far, mean J of the generation)])"""
     from cmaes import CMA
     robots = robots or robust_set()
-    obj = Objective(robots)
+    obj = Objective(robots, kind)
     J0, outs0 = obj.evaluate(space.build(space.x0), detail=True)
     log(f"start: J = {J0:.1f}   {describe(outs0)}   ({space.dim} variables, {len(robots)} robot models)")
     u0 = space.to_unit(space.x0)
@@ -150,9 +166,9 @@ def run_cmaes(space: Space, robots=None, gens: int = 30, pop: int = 16, sigma: f
     pool = None
     if jobs > 1:
         from multiprocessing import Pool
-        pool = Pool(jobs, initializer=_winit, initargs=(space, robots))
+        pool = Pool(jobs, initializer=_winit, initargs=(space, robots, kind))
     else:
-        _winit(space, robots)
+        _winit(space, robots, kind)
     t0 = time.time()
     try:
         for g in range(1, gens + 1):

@@ -243,8 +243,8 @@ def optimizer(hist, before: List[Dict], after: List[Dict], labels: List[str], pa
 
 def real_flips(rows: List[Dict], path):
     """rows: dict(file, preset, surface, shoes, metrics)"""
-    order = ["k7_405", "o1", "S1", "S2", "s3", "S5", "S6", "S7", "s3 grass"]
-    names = {"k7_405": "K7 405 g", "o1": "O1", "s3": "S3", "s3 grass": "S3\ngrass"}
+    order = ["k7_405", "o1", "S1", "O2", "S2", "s3", "S5", "S6", "S7", "s3 grass", "k7_405 grass"]
+    names = {"k7_405": "K7\n405 g", "o1": "O1", "s3": "S3", "s3 grass": "S3\ngrass", "k7_405 grass": "K7 405 g\ngrass mat"}
     groups = {k: [] for k in order}
     for r in rows:
         key = r["preset"] + (" grass" if "grass" in r["surface"] else "")
@@ -266,16 +266,19 @@ def real_flips(rows: List[Dict], path):
         a.set_xticks(range(len(order)))
         a.set_xticklabels([names.get(k, k) for k in order])
     ax[0].set_ylabel("turned when the paws hit, deg")
-    ax[0].set_title("34 real flips: rotation at touchdown (bar = mean)")
+    ax[0].set_title(f"{sum(len(g) for g in groups.values())} real flips: rotation at touchdown (bar = mean)")
     ax[1].set_ylabel("roll picked up in the air, deg")
     ax[1].set_title("Twist at touchdown")
     ax[0].plot([], [], "o", color=C[0], label="ended upright")
     ax[0].plot([], [], "X", color=CRITICAL, label="fell")
     ax[0].legend(loc="lower left")
-    ax[0].annotate("rubber shoes from here on", (2.6, ax[0].get_ylim()[1]), xytext=(0, -12),
+    ax[0].annotate("rubber shoes", (1.6, ax[0].get_ylim()[1]), xytext=(0, -12),
+                   textcoords="offset points", color=INK2, fontsize=9)
+    ax[0].annotate("no shoes", (9.6, ax[0].get_ylim()[1]), xytext=(0, -12),
                    textcoords="offset points", color=INK2, fontsize=9)
     for a in ax:
-        a.axvline(2.5, color=AXIS, lw=1, ls=":")
+        a.axvline(1.5, color=AXIS, lw=1, ls=":")
+        a.axvline(9.5, color=AXIS, lw=1, ls=":")
     fig.tight_layout()
     return _save(fig, path)
 
@@ -325,5 +328,58 @@ def landscape(S, L, E, best, path):
     cb = fig.colorbar(im, ax=ax, pad=0.02)
     cb.set_label("fit error (lower = closer to the real flips)")
     cb.outline.set_visible(False)
+    fig.tight_layout()
+    return _save(fig, path)
+
+
+def landing(recs: List, sim_before, sims_l2_before: List[Dict], sims_l2_after: List[Dict], volts, path,
+            sim_after=None, older: Optional[List] = None):
+    """left: body rotation around the touchdown, real (today's strong flips + older ones) vs the sim;
+    right: how far it rocks back after the paws touch, K7 405 g vs the landing-tuned table, every model x voltage"""
+    fig, ax = plt.subplots(1, 2, figsize=(14, 4.8), gridspec_kw=dict(width_ratios=[1.25, 1]))
+    a = ax[0]
+    for r in older or []:
+        k = (r.t > r.metrics["t_td"] - 0.4) & (r.t < r.metrics["t_td"] + 0.9)
+        a.plot((r.t[k] - r.metrics["t_td"]) * 1000, r.pitch[k] - r.metrics["rot_settled"] + 360, color=GRID, lw=1.3,
+               label="real, flips 81-83 (weaker battery)" if r is older[0] else None)
+    for n, r in enumerate(recs):
+        k = (r.t > r.metrics["t_td"] - 0.4) & (r.t < r.metrics["t_td"] + 0.9)
+        a.plot((r.t[k] - r.metrics["t_td"]) * 1000, r.pitch[k] - r.metrics["rot_settled"] + 360, color=[INK2, MUTED][n % 2],
+               lw=1.6, label=f"real, {r.name} (rocks back {r.metrics['overshoot']:.0f} deg)")
+    for s, lab, col, ls in ((sim_before, "sim, K7 405 g", C[0], "--"), (sim_after, "sim, K7 405 L2", C[1], "-")):
+        if s is None:
+            continue
+        m = s.metrics
+        k = (s.t > m["t_td"] - 0.4) & (s.t < m["t_td"] + 0.9)
+        a.plot((s.t[k] - m["t_td"]) * 1000, s.pitch[k] - m["rot_settled"] + 360, color=col, ls=ls,
+               label=f"{lab} (rocks back {m['overshoot']:.0f} deg)")
+    a.axhline(360, color=AXIS, lw=0.8)
+    a.axvline(0, color=MUTED, lw=1, ls=":")
+    a.annotate("front paws touch", (0, 150), xytext=(6, 0), textcoords="offset points", color=INK2, fontsize=9)
+    a.set_xlabel("ms from the touchdown")
+    a.set_ylabel("body turned, deg (360 = where it settles)")
+    a.set_yticks([90, 180, 270, 360, 400])
+    a.set_title("The strong flips land, then sit back nose-up")
+    a.legend(loc="lower right", fontsize=8.5)
+    b = ax[1]
+    nv = len(volts)
+    per = len(sims_l2_before) // nv
+    x = np.arange(nv)
+    for k, (outs, nm, col) in enumerate(((sims_l2_before, "K7 405 g", MUTED), (sims_l2_after, "K7 405 L2", C[1]))):
+        for i in range(nv):
+            grp = outs[i * per:(i + 1) * per]
+            xs = x[i] + (k - 0.5) * 0.36 + np.linspace(-0.1, 0.1, per)
+            for xx, o in zip(xs, grp):
+                b.plot(xx, o["overshoot"], "o" if o["upright"] else "X", color=col if o["upright"] else CRITICAL,
+                       ms=7 if o["upright"] else 8, mec=SURFACE, mew=0.8, label=None)
+            b.plot([x[i] + (k - 0.5) * 0.36 - 0.14, x[i] + (k - 0.5) * 0.36 + 0.14],
+                   [np.mean([o["overshoot"] for o in grp])] * 2, color=col, lw=2)
+        b.plot([], [], "o", color=col, label=nm)
+    b.plot([], [], "X", color=CRITICAL, label="did not end upright")
+    b.set_xticks(x)
+    b.set_xticklabels([f"{v:g} V" for v in volts])
+    b.set_ylabel("rocks back after the touchdown, deg")
+    b.set_title("Sim: 6 fitted models at each battery voltage")
+    b.legend(loc="upper left", fontsize=8.5)
     fig.tight_layout()
     return _save(fig, path)

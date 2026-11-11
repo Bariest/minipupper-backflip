@@ -78,7 +78,9 @@ def measure(r: Recording) -> Dict[str, float]:
     end = r.t > r.t[-1] - 0.3
     # twist: roll and yaw picked up between the spin start and the touchdown
     tw = lambda x: float(x[i_td] - x[i_spin])
-    return dict(t_push=float(r.t[i_push]), t_td=float(r.t[i_td]), rot_td=float(r.pitch[i_td]),
+    from .sim import landing_metrics
+    return dict(**landing_metrics(r.t, r.pitch, a, float(r.t[i_td])),
+                t_push=float(r.t[i_push]), t_td=float(r.t[i_td]), rot_td=float(r.pitch[i_td]),
                 push_to_td_ms=float(1000 * (r.t[i_td] - r.t[i_push])), peak_rate_dps=float(rate[:i_td + 1].max()),
                 roll_td=tw(r.roll), yaw_td=tw(r.yaw), peak_g=float(a[i_td:i_td + 40].max()),
                 upright=bool(r.accel[end, 2].mean() < -0.8), rot_end=float(r.pitch[-1]),

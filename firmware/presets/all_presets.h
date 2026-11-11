@@ -5,19 +5,21 @@
 #include "presets/g1.h"
 #include "presets/k7_360.h"
 #include "presets/k7_405.h"
+#include "presets/k7_405_l2.h"
 #include "presets/k7_405_opt.h"
 #include "presets/o1.h"
 #include "presets/s3.h"
 
 typedef struct { const char *key; const bf_table_t *table; uint16_t stand[12]; } bf_preset_entry_t;
 /* stand = the calibrated stand pose (ticks) of the robot the table was recorded on */
-static const bf_preset_entry_t bf_presets[6] = {
+static const bf_preset_entry_t bf_presets[7] = {
     { "g1", &BF_G1, { 425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603 } },
     { "k7_360", &BF_K7_360, { 425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603 } },
     { "k7_405", &BF_K7_405, { 425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603 } },
+    { "k7_405_l2", &BF_K7_405_L2, { 425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603 } },
     { "k7_405_opt", &BF_K7_405_OPT, { 425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603 } },
     { "o1", &BF_O1, { 425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603 } },
     { "s3", &BF_S3, { 425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603 } },
 };
-#define BF_N_PRESETS 6
+#define BF_N_PRESETS 7
 #endif

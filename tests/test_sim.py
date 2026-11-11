@@ -34,3 +34,17 @@ def test_fitted_model_beats_nominal():
 def test_presets_fit_a_centred_stand():
     for p in sorted((ROOT / "presets").glob("*.json")):
         assert not Preset.load(p).rail_check([511] * 12), p.name
+
+
+def test_landing_metrics_real():
+    assert recording.load("flip_115").metrics["overshoot"] > 30       # docs/07: sat back 47 deg
+    assert recording.load("flip_81").metrics["overshoot"] < 20        # the weaker flips: 8-15 deg
+
+
+def test_l2_keeps_the_push():
+    k7, l2 = Preset.load("k7_405"), Preset.load("k7_405_l2")
+    assert l2.frames[:4] == k7.frames[:4] and l2.move_ms[:4] == k7.move_ms[:4] and l2.hold_ms[:4] == k7.hold_ms[:4]
+    from backflip import ENSEMBLE, ENSEMBLE_FLOORS
+    like_today = (ENSEMBLE[2].at(12.5), ENSEMBLE_FLOORS[2])           # the fitted model that matches flips 115-116
+    before, after = simulate(k7, *like_today).metrics, simulate(l2, *like_today).metrics
+    assert before["overshoot"] > 30 and after["overshoot"] < 10 and after["upright"]

@@ -1,6 +1,6 @@
 # 5. On the real robot
 
-Everything in this repo was checked against 34 recorded flips of one Mini Pupper 2: 405 g, stock servos, a 3S pack at about 12 V, Strong servo gains, and a 1500 mA current limit. They are all in [`data/recordings`](../data/recordings), each labelled in `index.csv` with the table it played, the floor, and whether it wore shoes.
+Everything in this repo was checked against 36 recorded flips of one Mini Pupper 2: 405 g, stock servos, a 3S pack at about 12 V, Strong servo gains, and a 1500 mA current limit. They are all in [`data/recordings`](../data/recordings), each labelled in `index.csv` with the table it played, the floor, and whether it wore shoes.
 
 ## Recording a flip
 
@@ -28,7 +28,7 @@ python scripts/analyze_recording.py my_flip.csv --sim k7_405 --plot check.png
 * **twist**: roll and yaw picked up between the spin start and the touchdown.
 * **ended upright**: gravity on −z for the last 0.3 s.
 
-## 34 flips
+## 36 flips
 
 ![rotation at touchdown and twist, every real flip](figures/real_flips.png)
 
@@ -39,6 +39,7 @@ python scripts/analyze_recording.py my_flip.csv --sim k7_405 --plot check.png
 | S1 / S2 | 6 | 243-280° | 5 / 6 | rubber shoes |
 | S3 | 6 | 237° (233-242) | 6 / 6 | rubber shoes, carpet |
 | S3 on grass | 3 | 235° (233-237) | **0 / 3** | soft floor |
+| K7 405 g on a thin grass mat | 2 | 286° (280-292) | 2 / 2 | strong flips: sat back 40-47° after landing ([docs/07](07-sim-to-real-landing.md)) |
 
 ## What we learned
 

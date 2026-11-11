@@ -3,7 +3,7 @@ box this script uses EGL).
 
     python scripts/make_figures.py            # all
     python scripts/make_figures.py voltage    # some: keyframes anatomy sim_vs_real servo voltage optimizer
-                                              #       real floors sysid render
+                                              #       real floors sysid render landing sim2real
 """
 import json
 import os
@@ -116,9 +116,31 @@ def fig_render():
                  fps=25, distance=0.42, elevation=-14)
 
 
+def fig_landing():
+    from backflip.optimize import Objective, landing_set
+    volts = (11.5, 12.0, 12.5, 13.0, 13.5)
+    L2 = Preset.load("k7_405_l2")
+    _, before = Objective(landing_set(volts), "landing").evaluate(K7, detail=True)
+    _, after = Objective(landing_set(volts), "landing").evaluate(L2, detail=True)
+    like_today = (ENSEMBLE[2].at(12.5), ENSEMBLE_FLOORS[2])        # the fitted model that matches flips 115-116
+    plots.landing([rec.load("flip_115"), rec.load("flip_116")], simulate(K7, *like_today, RB), before, after, volts,
+                  FIG / "landing.png", sim_after=simulate(L2, *like_today, RB),
+                  older=[rec.load(f"flip_{i}") for i in (81, 82, 83)])
+
+
+def fig_sim2real():
+    from backflip import render
+    like_today = (ENSEMBLE[2].at(12.5), ENSEMBLE_FLOORS[2])
+    sims = [simulate(K7, *like_today, RB), simulate(Preset.load("k7_405_l2"), *like_today, RB)]
+    render.sim_vs_real_video(ROOT / "media" / "flip_115_no_screen.mp4", 2.62, sims,
+                             ["sim: K7 405 g", "sim: K7 405 L2 (new landing)"], FIG / "sim2real.gif",
+                             real_label="real: K7 405 g (flip 115)", t0=2.36, t1=3.40, width=384, height=216,
+                             step=2, colors=128)
+
+
 ALL = dict(keyframes=fig_keyframes, anatomy=fig_anatomy, sim_vs_real=fig_sim_vs_real, servo=fig_servo,
            voltage=fig_voltage, optimizer=fig_optimizer, real=fig_real, floors=fig_floors, sysid=fig_sysid,
-           render=fig_render)
+           render=fig_render, landing=fig_landing, sim2real=fig_sim2real)
 
 
 def main():

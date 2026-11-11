@@ -100,6 +100,18 @@ def simulate(preset: Preset, servo: ServoModel = FITTED, floor: Floor = Floor(),
     return res
 
 
+def landing_metrics(t, pitch, accel_g, t_td: float) -> Dict[str, float]:
+    """How the landing went after the front paws touch (shared by the sim and the real recordings):
+    overshoot  how far it rocks past where it ends up, deg: the body rolls over the front paws and, with spin left,
+               the rear slams down and it sits back nose-up before settling (real K7 405 g at full power: 40-47 deg)
+    impact2_g  the hardest jolt 50-350 ms after the touchdown: the rear legs coming down, g"""
+    end = pitch[t > t[-1] - 0.3].mean()
+    k = (t >= t_td) & (t < t_td + 0.8)
+    k2 = (t >= t_td + 0.05) & (t < t_td + 0.35)
+    return dict(rot_max_after=float(pitch[k].max()), overshoot=float(max(0.0, pitch[k].max() - end)),
+                impact2_g=float(accel_g[k2].max()) if k2.any() else 0.0, rot_settled=float(end))
+
+
 def measure(r: FlipResult, upright_end: float, offset: float = 0.0) -> Dict[str, float]:
     """The flip's numbers, detected the way the robot's IMU would see them:
     touchdown = the first jolt over 3 g once it has been airborne and turned past 150 deg."""
@@ -115,6 +127,7 @@ def measure(r: FlipResult, upright_end: float, offset: float = 0.0) -> Dict[str,
     i_off = int(on[-1]) + 1 if len(on) else 0                # take-off: the start of the last flight before landing
     rate = np.gradient(r.pitch, r.t)
     return dict(
+        **landing_metrics(r.t, r.pitch, r.accel_g, float(r.t[i_td])),
         rot_td=float(r.pitch[i_td]), t_td=float(r.t[i_td]), first_touch=first,
         upright=bool(upright_end > 0.85 and abs(raw[-1] - 360.0) < 60.0), upright_end=upright_end,
         rot_end=float(r.pitch[-1]), t_takeoff=float(r.t[i_off]),
@@ -123,6 +136,17 @@ def measure(r: FlipResult, upright_end: float, offset: float = 0.0) -> Dict[str,
         peak_rate_dps=float(rate[: i_td + 1].max()), rot_takeoff=float(r.pitch[i_off]),
         body_ms=float(FLUSH_MS * r.body[i_land:].sum()), peak_g=float(r.accel_g[i_land:i_land + 40].max()),
     )
+
+
+def landing_score(m: Dict[str, float]) -> float:
+    """Score for tuning the LANDING only (the push frames stay as they are): stand up, paws first, rock back as
+    little as possible after the paws touch, and bring the rear legs down softly.  Higher is better, 0 is perfect."""
+    s = -1.0 * max(0.0, m["overshoot"] - 10.0) - 3.0 * max(0.0, m["impact2_g"] - 6.0)
+    if m["first_touch"] != "paws":
+        s -= 25.0
+    if not m["upright"]:
+        s -= 200.0
+    return s
 
 
 def score(metrics: Dict[str, float], target: float = 355.0, over: float = 390.0) -> float:
