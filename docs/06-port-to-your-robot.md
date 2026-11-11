@@ -16,7 +16,7 @@ Mini Pupper reaches about 45° + 1000 °/s × 0.2 s with its centre of mass risi
 ## 1. Get the model right
 
 * Mass and its distribution matter most. Weigh the robot and the battery, and check the front/rear split on two kitchen scales.
-* Model each leg's linkage the way the servo actually drives it. Mini Pupper's knee servo drives the shin through a rod, which is modelled as a tendon (`model/minipupper2.xml`).
+* Model each leg's linkage the way the servo actually drives it. Mini Pupper's knee servo drives the shin through a rod, which is modelled as a tendon (`model/minipupper4.xml`).
 * Keep the collision geometry simple: capsules and spheres. Paw size and friction matter. Shell detail doesn't.
 * Write one function that turns your firmware's servo command into the model's joint angles (`backflip/robot.py: ServoMap`), so tables run in the sim unchanged.
 

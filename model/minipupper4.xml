@@ -1,4 +1,4 @@
-<!-- Mini Pupper 2, 405 g (with the 35 g battery and the 10 g display).
+<!-- Mini Pupper 4, 405 g (with the 35 g battery and the 10 g display).
      Servos: MuJoCo position actuators with a torque cap and back-EMF damping; the
      knee servo drives the shin through a rod, modelled as a fixed tendon.
      The servo numbers in backflip/robot.py tune this model; see docs/03-simulation.md. -->

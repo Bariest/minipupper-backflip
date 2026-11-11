@@ -4,7 +4,7 @@ A simulator only helps if it flips like the real robot, and an out-of-the-box se
 
 ## The model
 
-`model/minipupper2.xml` is the Mini Pupper 2 at 405 g. It includes the 35 g battery at the back and the 10 g display at the front, and its weight split (177 g on the front paws, 223 g on the rear) was checked on the real robot. Collision geometry is simple: a cylinder for each hip motor, capsules for the thighs and shins, and a 5.5 mm sphere for each paw.
+`model/minipupper4.xml` is the Mini Pupper 4 at 405 g. It includes the 35 g battery at the back and the 10 g display at the front, and its weight split (177 g on the front paws, 223 g on the rear) was checked on the real robot. Collision geometry is simple: a cylinder for each hip motor, capsules for the thighs and shins, and a 5.5 mm sphere for each paw.
 
 | part | how it is modelled |
 |---|---|

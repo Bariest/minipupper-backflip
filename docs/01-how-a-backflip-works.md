@@ -1,6 +1,6 @@
 # 1. How a backflip works
 
-A backflip is a rotation problem more than a jumping problem. The robot has to leave the ground already spinning, stay in the air long enough to turn most of the way round, and then catch itself on its paws. This page goes through the physics behind each of those steps, with numbers from the 405 g Mini Pupper 2 and its stock servos at 12 V.
+A backflip is a rotation problem more than a jumping problem. The robot has to leave the ground already spinning, stay in the air long enough to turn most of the way round, and then catch itself on its paws. This page goes through the physics behind each of those steps, with numbers from the 405 g Mini Pupper 4 and its stock servos at 12 V.
 
 ![a simulated K7 405 g flip, one pose every ~80 ms](figures/sequence.png)
 

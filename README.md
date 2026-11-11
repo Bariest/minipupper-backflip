@@ -1,4 +1,10 @@
-# Mini Pupper 2 backflip: sim to real
+# Mini Pupper 4 backflip: sim to real
+
+[![tests](https://github.com/Bariest/minipupper-backflip/actions/workflows/tests.yml/badge.svg)](https://github.com/Bariest/minipupper-backflip/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)
+![MuJoCo](https://img.shields.io/badge/sim-MuJoCo-orange.svg)
+![Mini Pupper 4](https://img.shields.io/badge/robot-Mini%20Pupper%204-yellow.svg)
 
 **A backflip for a 405 g quadruped with stock hobby servos, designed in simulation and landed on the real robot.** This repo covers the physics, a MuJoCo simulator fitted to real flips, CMA-ES trajectory optimization, analysis tools for the robot's telemetry, and a 75-line firmware player. It also contains everything learned from 36 recorded flips.
 
@@ -9,7 +15,7 @@
 
 | | |
 |---|---|
-| robot | Mini Pupper 2: 405 g with battery (395 g without the display), 12 stock servos, 3S pack |
+| robot | Mini Pupper 4: 405 g with battery (395 g without the display), 12 stock servos, 3S pack |
 | controller | open-loop keyframes: 9 poses, 650 ms from the first push to the end of the landing |
 | current flip | **K7 405 L2**: lands front paws first, settles level (no sit-back), with or without the display |
 | sim accuracy | servo tracks within 6° RMS, body rotation within 9° RMS of real flips |
@@ -105,10 +111,18 @@ examples/            quickstart.py
 
 A backflip is hard on the robot. Flip over a firm floor with 1 m of clear space, keep the battery charged, and put a cushion behind the robot the first time you try a new table. Never flip near a table edge. See [docs/05](docs/05-real-robot.md#before-you-flip).
 
+## Contributing
+
+Flips from other Mini Puppers are the most useful contribution. A recording and a video of a flip on a different battery, floor or calibration tells the simulator something new. So do a fix, a new table or a port to another robot. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Citing
+
+If this work helps your research, please cite it. GitHub's "Cite this repository" button uses [CITATION.cff](CITATION.cff).
+
 ## Acknowledgements
 
-Mini Pupper 2 hardware by MangDang. Physics by [MuJoCo](https://mujoco.org). CMA-ES via [`cmaes`](https://github.com/CyberAgentAILab/cmaes).
+Developed at [MangDang](https://www.mangdang.net), makers of Mini Pupper. Physics by [MuJoCo](https://mujoco.org). CMA-ES via [`cmaes`](https://github.com/CyberAgentAILab/cmaes).
 
 ## License
 
-MIT, see [LICENSE](LICENSE). The robot meshes in `model/meshes` come from the Mini Pupper 2 CAD and remain under their original license.
+[MIT](LICENSE), © 2026 MangDang and contributors. This covers the code, the keyframe tables, the recordings, the videos, the figures and the Mini Pupper 4 model and meshes in `model/`, which MangDang releases here under the same license.

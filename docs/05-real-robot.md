@@ -1,6 +1,6 @@
 # 5. On the real robot
 
-Everything in this repo was checked against 36 recorded flips of one Mini Pupper 2: 405 g, stock servos, a 3S pack at about 12 V, Strong servo gains, and a 1500 mA current limit. They are all in [`data/recordings`](../data/recordings), each labelled in `index.csv` with the table it played, the floor, and whether it wore shoes.
+Everything in this repo was checked against 36 recorded flips of one Mini Pupper 4: 405 g, stock servos, a 3S pack at about 12 V, Strong servo gains, and a 1500 mA current limit. They are all in [`data/recordings`](../data/recordings), each labelled in `index.csv` with the table it played, the floor, and whether it wore shoes.
 
 ## Recording a flip
 
@@ -11,7 +11,7 @@ The firmware logs 200 Hz telemetry from the moment frame 0 is armed:
 t_s,pos1..pos12,cur1..cur12,ax,ay,az,gx,gy,gz
 ```
 
-`pos` is the servo's raw angle (deg), `cur` is the motor current (mA), `a*` is acceleration (g) and `g*` is angular rate (°/s) from the BMI270. On Mini Pupper 2 the IMU's x axis points left, y forwards, z down. The flip's rotation is therefore −gx, roll is +gy and yaw is −gz.
+`pos` is the servo's raw angle (deg), `cur` is the motor current (mA), `a*` is acceleration (g) and `g*` is angular rate (°/s) from the BMI270. On Mini Pupper 4 the IMU's x axis points left, y forwards, z down. The flip's rotation is therefore −gx, roll is +gy and yaw is −gz.
 
 ```
 python scripts/analyze_recording.py flip_81 flip_82 flip_83

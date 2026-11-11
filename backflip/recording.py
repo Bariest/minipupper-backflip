@@ -5,7 +5,7 @@ A recording is the robot's 200 Hz telemetry CSV (web page -> "Record the next fl
     # mark_s=1.4936          <- the moment frame 0 was armed (t = 0 here)
     t_s, pos1..pos12 (deg, the servo's raw angle), cur1..cur12 (mA), ax ay az (g), gx gy gz (deg/s)
 
-IMU axes on Mini Pupper 2 (BMI270): x = left, y = forward, z = down.  So the backflip's rotation (nose up and over)
+IMU axes on Mini Pupper 4 (BMI270): x = left, y = forward, z = down.  So the backflip's rotation (nose up and over)
 is -gx, roll is +gy and yaw is -gz.  The servo's raw angle runs opposite to the firmware's servo angle.
 """
 from __future__ import annotations

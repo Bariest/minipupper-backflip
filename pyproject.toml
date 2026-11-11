@@ -4,12 +4,17 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "minipupper-backflip"
-version = "1.0.0"
-description = "Keyframe backflips for Mini Pupper 2: MuJoCo simulation, servo-model fitting, CMA-ES trajectory optimization, real-robot analysis and a firmware player"
+version = "1.1.0"
+description = "Keyframe backflips for Mini Pupper 4: MuJoCo simulation, servo-model fitting, CMA-ES trajectory optimization, real-robot analysis and a firmware player"
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
+authors = [{ name = "MangDang" }]
+keywords = ["quadruped", "backflip", "sim-to-real", "mujoco", "trajectory-optimization", "mini-pupper"]
 dependencies = ["mujoco>=3.1", "numpy>=1.24", "matplotlib>=3.7", "pillow>=9.0", "cmaes>=0.10"]
+
+[project.urls]
+Repository = "https://github.com/Bariest/minipupper-backflip"
 
 [project.optional-dependencies]
 test = ["pytest>=7.0"]

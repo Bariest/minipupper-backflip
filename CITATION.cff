@@ -1,0 +1,24 @@
+cff-version: 1.2.0
+message: "If you use this work, please cite it as below."
+title: "Mini Pupper 4 backflip: sim to real"
+abstract: >-
+  Keyframe backflips for the Mini Pupper 4 quadruped (405 g, stock hobby servos): a MuJoCo simulator whose servo
+  model is fitted to recorded flips, CMA-ES trajectory optimization robust over an ensemble of fitted models,
+  real-robot telemetry and videos, and a dependency-free firmware keyframe player.
+type: software
+authors:
+  - name: "MangDang"
+    website: "https://www.mangdang.net"
+repository-code: "https://github.com/Bariest/minipupper-backflip"
+license: MIT
+version: "1.1.0"
+date-released: "2026-11-11"
+keywords:
+  - quadruped
+  - backflip
+  - sim-to-real
+  - MuJoCo
+  - system identification
+  - trajectory optimization
+  - CMA-ES
+  - Mini Pupper
