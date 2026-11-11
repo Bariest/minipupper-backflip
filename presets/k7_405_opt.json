@@ -1,0 +1,20 @@
+{
+ "name": "Backflip K7 405 g CMA-ES",
+ "description": "K7 405 g after 30 generations of CMA-ES (480 candidates x 10 robot models, 12 V). In the sim: paws first on 10/10 robot models (K7 405 g: 2/10), upright 10/10 (9/10), same rotation. NOT yet tried on the real robot - try it over something soft first.",
+ "units": "frames: ticks relative to the stand, servos 1..12 (FR hip/thigh/knee, FL, RR, RL); 1 tick = 0.3027 deg; times in ms",
+ "stand_ticks": [425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603],
+ "frames": [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, -94, -251, 0, 94, 251, 0, -179, -70, 0, 179, 70],
+    [0, -178, 107, 0, 178, -107, 0, -136, -71, 0, 136, 71],
+    [0, -204, -14, 0, 204, 14, 0, -314, 33, 0, 314, -33],
+    [0, -411, -449, 0, 411, 449, 0, 131, 423, 0, -131, -423],
+    [0, -266, -454, 0, 266, 454, 0, -26, -131, 0, 26, 131],
+    [0, 59, -31, 0, -59, 31, 0, 84, 27, 0, -84, -27],
+    [0, 113, -63, 0, -113, 63, 0, 101, -25, 0, -101, 25],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ ],
+ "move_ms": [1000, 737, 20, 33, 65, 47, 45, 61, 600],
+ "hold_ms": [500, 208, 23, 37, 61, 77, 28, 221, 300],
+ "blend_pct": [100, 100, 100, 100, 100, 100, 100, 100, 100]
+}

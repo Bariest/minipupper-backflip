@@ -1,0 +1,8 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+firmware/host/play_table
+firmware/host/play_table.exe
+*.mp4

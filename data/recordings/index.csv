@@ -1,0 +1,35 @@
+file,preset,surface,shoes,notes
+flip_81,k7_405,indoor,no,
+flip_82,k7_405,indoor,no,
+flip_83,k7_405,indoor,no,
+flip_84,o1,indoor,no,
+flip_85,o1,indoor,no,
+flip_86,o1,indoor,no,
+flip_87,o1,indoor,no,
+flip_88,o1,indoor,no,
+flip_89,o1,indoor,no,
+flip_90,o1,indoor,no,
+flip_91,o1,indoor,no,
+flip_92,o1,indoor,no,
+flip_93,o1,indoor,no,
+flip_94,o1,indoor,no,
+flip_95,o1,carpet,rubber,
+flip_96,O2,carpet,rubber,O2: not in presets/
+flip_97,S1,carpet,rubber,S1: O1 with less rear-thigh swing in frame 3
+flip_98,S1,carpet,rubber,S1: O1 with less rear-thigh swing in frame 3
+flip_99,S1,carpet,rubber,S1: O1 with less rear-thigh swing in frame 3
+flip_100,S1,carpet,rubber,S1: O1 with less rear-thigh swing in frame 3
+flip_101,S2,carpet,rubber,S2: not in presets/
+flip_102,s3,carpet,rubber,
+flip_103,s3,carpet,rubber,
+flip_104,s3,carpet,rubber,
+flip_105,S2,carpet,rubber,S2: not in presets/
+flip_106,s3,carpet,rubber,
+flip_107,S5,carpet,rubber,S5: S3 + hip offset
+flip_108,S6,carpet,rubber,S6: S3, rear-left thigh -40 ticks
+flip_109,s3,carpet,rubber,
+flip_110,S7,carpet,rubber,S7: S3, rear-left thigh -60 ticks
+flip_111,s3,carpet,rubber,
+flip_112,s3,artificial grass,?,new calibration; all three failed
+flip_113,s3,artificial grass,?,new calibration; all three failed
+flip_114,s3,artificial grass,?,new calibration; all three failed

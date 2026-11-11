@@ -1,0 +1,20 @@
+{
+ "name": "Backflip K7 405 g",
+ "description": "The recommended flip. K7 re-timed for the 405 g robot (with battery). Old (stock) servos, 3S ~12 V, Strong gains, 1500 mA. Front knees capped at 142 deg and +6 ms on frame 5 (the firmware's fixed landing timing) are already in this table.",
+ "units": "frames: ticks relative to the stand, servos 1..12 (FR hip/thigh/knee, FL, RR, RL); 1 tick = 0.3027 deg; times in ms",
+ "stand_ticks": [425, 514, 658, 495, 507, 367, 504, 590, 455, 499, 512, 603],
+ "frames": [
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, -101, -244, 0, 101, 244, 0, -152, -38, 0, 152, 38],
+    [0, -163, 85, 0, 163, -85, 0, -144, -38, 0, 144, 38],
+    [0, -192, 13, 0, 192, -13, 0, -281, 45, 0, 281, -45],
+    [0, -395, -452, 0, 395, 452, 0, 169, 412, 0, -169, -412],
+    [0, -275, -470, 0, 275, 470, 0, -48, -152, 0, 48, 152],
+    [0, 61, -9, 0, -61, 9, 0, 61, 8, 0, -61, -8],
+    [0, 76, -57, 0, -76, 57, 0, 89, -10, 0, -89, 10],
+    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+ ],
+ "move_ms": [1000, 600, 16, 27, 54, 40, 29, 60, 600],
+ "hold_ms": [500, 300, 20, 42, 49, 48, 23, 243, 300],
+ "blend_pct": [100, 100, 100, 100, 100, 100, 100, 100, 100]
+}
